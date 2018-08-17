@@ -48,6 +48,7 @@ export function moveApple(currentCoordinates) {
   const head = currentCoordinates.headCoordinates;
   const tails = currentCoordinates.tailCoordinates;
   const rocks = currentCoordinates.rockCoordinates;
+  const lastTailSegment = currentCoordinates.recentTailPop;
 
   // Finding new apple location
   while (true) {
@@ -66,8 +67,14 @@ export function moveApple(currentCoordinates) {
         }
       }
     }
+    // Apple does not show up on lastTailSegment
+    var appleNotOnLastSegment = false;
+    if (lastTailSegment.x !== appleX && lastTailSegment.y !== appleY) {
+      appleNotOnLastSegment = true;
+    }
+
     // We found a good spot
-    if (appleNotOnTail && appleNotOnRock) {
+    if (appleNotOnTail && appleNotOnRock && appleNotOnLastSegment) {
       break;
     }
   }
