@@ -43,6 +43,7 @@ class App extends Component {
   componentDidUpdate(prevProps) {
     // If the head moved, we check
     if (this.props.snake.headCoordinates !== prevProps.snake.headCoordinates) {
+      // If snake eats an apple, randomly place another and increase snake length
       if (this.didEatApple()) {
         this.props.eatApple();
         this.props.moveApple(this.props.snake);

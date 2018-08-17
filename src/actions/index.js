@@ -43,31 +43,31 @@ export function eatApple() {
   };
 }
 
-// Cannot be on snake's tail or head...
-// Cannot appear on an apple
+// Apple was eaten and it needs to move
 export function moveApple(currentCoordinates) {
   const head = currentCoordinates.headCoordinates;
   const tails = currentCoordinates.tailCoordinates;
   const rocks = currentCoordinates.rockCoordinates;
-  // Finding new location
 
+  // Finding new apple location
   while (true) {
     var appleX = Math.floor(Math.random() * 20);
     var appleY = Math.floor(Math.random() * 16);
     var coordinates = { x: appleX, y: appleY };
 
     if (head.x !== appleX && head.y !== appleY) {
-      var goodToGo = true;
-      var rockColliding = overlappingWithRock([coordinates], rocks);
+      var appleNotOnTail = true;
+      var appleNotOnRock = overlappingWithRock([coordinates], rocks);
       for (var i = 0; i < tails.length; i++) {
+        // Make sure apple doesn't appear on tail
         if (tails[i].x === appleX && tails[i].y === appleY) {
-          goodToGo = false;
+          appleNotOnTail = false;
           break;
         }
       }
     }
-
-    if (goodToGo && rockColliding) {
+    // We found a good spot
+    if (appleNotOnTail && appleNotOnRock) {
       break;
     }
   }
