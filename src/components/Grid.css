@@ -1,0 +1,39 @@
+.container {
+  padding: 0;
+  margin: 0;
+  display: flex;
+}
+
+.container > div {
+  text-align: center;
+  flex: 1 0 auto;
+  height: auto;
+  box-sizing: border-box;
+  outline: 1px solid black;
+}
+
+.container > div:before {
+  content: "";
+  float: left;
+  padding-top: 100%;
+}
+
+.apple {
+  background-color: red;
+}
+
+.snake-head {
+  background-color: #339933;
+}
+
+.snake-tail {
+  background-color: #0fbd0f;
+}
+
+.rock {
+  background-color: #808080;
+}
+
+.open-space {
+  background-color: white;
+}
