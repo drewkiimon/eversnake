@@ -58,7 +58,7 @@ export function moveApple(currentCoordinates) {
 
     if (head.x !== appleX && head.y !== appleY) {
       var goodToGo = true;
-      var rockColliding = rockLogic([coordinates], rocks);
+      var rockColliding = overlappingWithRock([coordinates], rocks);
       for (var i = 0; i < tails.length; i++) {
         if (tails[i].x === appleX && tails[i].y === appleY) {
           goodToGo = false;
@@ -114,7 +114,7 @@ export function randomStartLocation() {
       // Make sure rocks do not overlap
       var goodRockPlacement = true;
       for (var i = 0; i < rockCoordinates.length; i++) {
-        var isGoodToPlace = rockLogic(possibleRock, rockCoordinates);
+        var isGoodToPlace = overlappingWithRock(possibleRock, rockCoordinates);
         if (!isGoodToPlace) {
           goodRockPlacement = false;
           break;
@@ -133,7 +133,7 @@ export function randomStartLocation() {
       var appleX = Math.floor(Math.random() * 20);
       var appleY = Math.floor(Math.random() * 16);
       var appleCoordinates = { x: appleX, y: appleY };
-      isGoodToPlace = rockLogic([appleCoordinates], rockCoordinates);
+      isGoodToPlace = overlappingWithRock([appleCoordinates], rockCoordinates);
       if (!isGoodToPlace) {
         break;
       }
@@ -224,26 +224,26 @@ export function randomStartLocation() {
 }
 
 const isItOverlappingRocks = (node, rockCoordinates) => {
-  var rockChecker = [];
+  // Iterate over rocks
   for (var i = 0; i < rockCoordinates.length; i++) {
     var currentRock = rockCoordinates[i];
     for (var j = 0; j < currentRock.length; j++) {
       const elem = currentRock[j];
-      const helper = node.x === elem.x && node.y === elem.y;
-      if (helper) {
-        rockChecker.push(helper);
+      const isOverlapping = node.x === elem.x && node.y === elem.y;
+      if (isOverlapping) {
+        return true;
       }
     }
   }
-  return rockChecker.length !== 0;
+  return false;
 };
 
 // Make sure nothing is going into the rocks
-const rockLogic = (proposedRock, rocks) => {
+const overlappingWithRock = (item, rocks) => {
   var good = true;
   for (var i = 0; i < rocks.length; i++) {
     const currentRock = rocks[i];
-    proposedRock.forEach(el => {
+    item.forEach(el => {
       for (var j = 0; j < currentRock.length; j++) {
         var curr = currentRock[j];
         if (curr.x === el.x && curr.y === el.y) {

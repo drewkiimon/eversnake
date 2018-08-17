@@ -92,18 +92,24 @@ class App extends Component {
 
     var gameOver = false;
     gameOver = this.movedOntoTail(head, tails, notMovingBackwards);
-
-    const hitRock = isItOverlappingRocks(head, rocks);
+    const snakeHitRock = isItOverlappingRocks(head, rocks);
 
     // If the snake goes out of bounds or hits a rock
-    if (head.x < 0 || head.x > 19 || head.y < 0 || head.y > 15 || hitRock) {
+    if (
+      head.x < 0 ||
+      head.x > 19 ||
+      head.y < 0 ||
+      head.y > 15 ||
+      snakeHitRock
+    ) {
       gameOver = true;
     }
 
+    // The game continues !!!
     if (!gameOver) {
       return notMovingBackwards;
     } else {
-      // The user made a move
+      // The snake "died"; restarting
       this.props.resetGame();
       this.props.randomStartLocation();
     }
@@ -115,6 +121,7 @@ class App extends Component {
     const keyCode = event.keyCode;
     const direction = keyCodes[keyCode];
 
+    // If we have a valid move that doesn't end the game, move snake
     if (this.isValidMove(direction)) {
       if (direction === "up") {
         this.props.moveUp();
@@ -138,18 +145,18 @@ class App extends Component {
 }
 
 const isItOverlappingRocks = (node, rockCoordinates) => {
-  var rockChecker = [];
+  // Iterate over rocks
   for (var i = 0; i < rockCoordinates.length; i++) {
     var currentRock = rockCoordinates[i];
     for (var j = 0; j < currentRock.length; j++) {
       const elem = currentRock[j];
-      const helper = node.x === elem.x && node.y === elem.y;
-      if (helper) {
-        rockChecker.push(helper);
+      const isOverlapping = node.x === elem.x && node.y === elem.y;
+      if (isOverlapping) {
+        return true;
       }
     }
   }
-  return rockChecker.length !== 0;
+  return false;
 };
 
 const mapStateToProps = state => {
