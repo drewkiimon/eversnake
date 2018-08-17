@@ -5,30 +5,37 @@ import "./Grid.css";
 // Comprised of 16 rows and 20 columns
 class Grid extends Component {
   componentDidUpdate(prevProps) {
+    var snake = this.props.snake;
     if (
-      this.props.snake.headCoordinates !== prevProps.snake.headCoordinates ||
-      this.props.snake.tailCoordinates.length !==
-        prevProps.snake.tailCoordinates.length
+      snake.headCoordinates !== prevProps.snake.headCoordinates ||
+      snake.tailCoordinates.length !== prevProps.snake.tailCoordinates.length
     ) {
-      const snakeState = this.props.snake;
-      const head = snakeState.headCoordinates;
-      const tails = snakeState.tailCoordinates;
-      const apple = snakeState.appleCoordinates;
-      const rocks = snakeState.rockCoordinates;
+      const head = snake.headCoordinates;
+      const tails = snake.tailCoordinates;
+      const apple = snake.appleCoordinates;
+      const rocks = snake.rockCoordinates;
+
       var grid = document.getElementById("grid-holder");
+      // We clear the grid when we get new head / tail coorindates
       while (grid.firstChild) {
         grid.removeChild(grid.firstChild);
       }
+
+      // If head exists on board
       if (head) {
+        // Go backwards for our grid
         for (var y = 15; y > -1; y--) {
           var container = document.createElement("div");
           container.classList.add("container");
+          // Appending divs and class names to each container div
           for (var x = 0; x < 20; x++) {
             var element = document.createElement("div");
-            // Snake head
+            // Check for snake head
             if (head.x === x && head.y === y) {
               element.classList.add("snake-head");
-            } else if (apple.x === x && apple.y === y) {
+            }
+            // Check for apple
+            else if (apple.x === x && apple.y === y) {
               element.classList.add("apple");
             }
             // Iterate through tails
@@ -48,6 +55,7 @@ class Grid extends Component {
                 }
               }
             }
+            // Everything else gets a open space
             if (element.classList === "") {
               element.classList.add("open-space");
             }
@@ -58,11 +66,9 @@ class Grid extends Component {
       }
     }
   }
-
-  componentDidMount() {}
-
+  // Took ID off of this div
   render() {
-    return <div id="grid-holder" />;
+    return <div />;
   }
 }
 
