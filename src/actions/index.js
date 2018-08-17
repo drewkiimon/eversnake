@@ -83,17 +83,16 @@ export function resetGame() {
 
 /*
 Initializing placement of:
-  - Apple
   - 3 Rocks
+  - Apple
   - Snake head
   - Snake tail
 */
-// apple {x:8, y:5}
-// rock [[{x: 8, y: 6},{x: 9, y: 6}, {x: 8, y: 5}, {x: 9, y: 5} ]]
 export function randomStartLocation() {
+  // 1) Place 3 rocks onto screen
   var rockCoordinates = [];
-  // Need to create 3 rocks
   while (rockCoordinates.length < 3) {
+    // Start rock by placing top left corner, then the rest
     var rockX = Math.floor(Math.random() * 18);
     var rockY = Math.floor(Math.random() * 15) + 1;
 
@@ -104,14 +103,10 @@ export function randomStartLocation() {
       { x: rockX + 1, y: rockY - 1 }
     ];
 
-    // Place initial rock since nothing else is on the board yet
-    // Current problems
-    // 100% overlap
-    // rocks colliding
     if (rockCoordinates.length === 0) {
       rockCoordinates.push(possibleRock);
     } else {
-      // Make sure rocks do not overlap
+      // Check for rock overlapping
       var goodRockPlacement = true;
       for (var i = 0; i < rockCoordinates.length; i++) {
         var isGoodToPlace = overlappingWithRock(possibleRock, rockCoordinates);
@@ -126,8 +121,7 @@ export function randomStartLocation() {
     }
   }
 
-  // Apple cannot overlap a rock
-  // This is my problem right now
+  // 2) Place apple
   while (true) {
     for (i = 0; i < rockCoordinates.length; i++) {
       var appleX = Math.floor(Math.random() * 20);
@@ -141,34 +135,31 @@ export function randomStartLocation() {
     if (isGoodToPlace) break;
   }
 
-  // Snake head cannot overlap rocks or apple
+  // 3) Place initial snake head
   while (true) {
     var x = Math.floor(Math.random() * 20);
     var y = Math.floor(Math.random() * 16);
     var possibleHead = { x, y };
-    var goodHead = true; // Change later
+    var validHeadLocation = true;
 
-    // Come fix this hell hole later
-    const checkRockOverlap = isItOverlappingRocks(
+    const headOverlapsRock = isItOverlappingRocks(
       possibleHead,
       rockCoordinates
     );
-    const checkAppleOverlap =
+    const headOverlapsApple =
       _.intersectionWith(appleCoordinates, possibleHead).length !== 0;
-    if (checkAppleOverlap || checkRockOverlap) {
-      goodHead = false;
-    }
 
-    if (goodHead) {
-      break;
+    if (headOverlapsApple || headOverlapsRock) {
+      validHeadLocation = false;
     }
+    if (validHeadLocation) break;
   }
 
   const headCoordinates = { x, y };
 
-  // Snake tail cannot overlap rocks, apple, or the snake head
+  // 4) Place snake tail
   while (true) {
-    // Is the tail going to be in the X or Y direction
+    // Choose if tail will be in X or Y direction
     const xOrY = Math.floor(Math.random() * 2);
     if (xOrY === 0) {
       const leftRight = Math.floor(Math.random() * 2);
@@ -176,16 +167,13 @@ export function randomStartLocation() {
       // Make sure X is in scope
       if (tailX > 0 && tailX < 20 && tailX !== appleX) {
         var tailCoordinates = { x: tailX, y };
-        // cross check with rocks and apple
-        const isItOverlapping = isItOverlappingRocks(
+        const isTailOverlappingRock = isItOverlappingRocks(
           tailCoordinates,
           rockCoordinates
         );
-
-        if (
-          _.intersectionWith(appleCoordinates, tailCoordinates).length === 0 &&
-          !isItOverlapping
-        ) {
+        const appleNotOnTail =
+          _.intersectionWith(appleCoordinates, tailCoordinates).length === 0;
+        if (appleNotOnTail && !isTailOverlappingRock) {
           break;
         }
       }
@@ -195,21 +183,20 @@ export function randomStartLocation() {
       // Make sure Y is in scope
       if (tailY > 0 && tailY < 16 && tailY !== appleY) {
         tailCoordinates = { x, y: tailY };
-        const isItOverlapping = isItOverlappingRocks(
+        const isTailOverlappingRock = isItOverlappingRocks(
           tailCoordinates,
           rockCoordinates
         );
-
-        if (
-          _.intersectionWith(appleCoordinates, tailCoordinates).length === 0 &&
-          !isItOverlapping
-        ) {
+        const appleNotOnTail =
+          _.intersectionWith(appleCoordinates, tailCoordinates).length === 0;
+        if (appleNotOnTail && !isTailOverlappingRock) {
           break;
         }
       }
     }
   }
 
+  // Our valid coordinates
   const coordinates = {
     headCoordinates,
     tailCoordinates,
@@ -255,7 +242,6 @@ const overlappingWithRock = (item, rocks) => {
   if (good) {
     return true;
   } else {
-    // bad
     return false;
   }
 };
