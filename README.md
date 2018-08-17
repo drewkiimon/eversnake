@@ -49,6 +49,10 @@ The user can move the snake by using the arrow keys on their keyboard, or if you
 
 Also, it is important to point out that the snake cannot move back to it's most recent spot after moving.
 
+### The Snake
+
+The snake is comprised of a head (shown with a dark green) and a tail (shown with a lighter green). Below, you will read how the snake's length increases over the game.
+
 ### The Apple
 
 When the snake's head touches an apple, it's length last tail segment no longer fades away, and is not added to the length of the snake. Therefore, as the snake eats more and more, the longer it gets.
