@@ -1,5 +1,7 @@
 # Eversnake
 
+![eversnake](https://user-images.githubusercontent.com/16771352/44249386-7be34300-a1a4-11e8-987b-0bd0836209b9.PNG)
+
 My coding task for this project was to essentially recreate the classic game Snake, but with a minor twist. The snake will now eat apples and has to avoid hitting rocks. This project was created as a coding challenge for Everlaw in Berkeley, CA.
 
 ## Getting Started
