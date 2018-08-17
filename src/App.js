@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import _ from "lodash";
-// import "./App.css";
 import { connect } from "react-redux";
 import Grid from "./components/Grid";
 
@@ -15,6 +14,7 @@ import {
   resetGame
 } from "./actions";
 
+// Key codes of arrows and W, A, S, D for movement
 const keyCodes = {
   37: "left",
   38: "up",
@@ -33,6 +33,7 @@ class App extends Component {
     this.moveSnake = this.moveSnake.bind(this);
   }
 
+  // Initialize event listener and item locations
   componentDidMount() {
     document.addEventListener("keydown", this.moveSnake);
     this.props.randomStartLocation();
@@ -42,14 +43,14 @@ class App extends Component {
   componentDidUpdate(prevProps) {
     // If the head moved, we check
     if (this.props.snake.headCoordinates !== prevProps.snake.headCoordinates) {
-      if (this.snakeAteApple()) {
+      if (this.didEatApple()) {
         this.props.eatApple();
         this.props.moveApple(this.props.snake);
       }
     }
   }
 
-  snakeAteApple() {
+  didEatApple() {
     const toEatOrNotToEat = _.isEqual(
       this.props.snake.headCoordinates,
       this.props.snake.appleCoordinates
@@ -57,14 +58,25 @@ class App extends Component {
     return toEatOrNotToEat;
   }
 
-  // Stops user from moving back to most recent tail spot
-  // Use it to check if it's on it's tail either
-  validMove(direction) {
-    var head = this.props.snake.headCoordinates;
-    const tails = this.props.snake.tailCoordinates;
-    const rocks = this.props.snake.rockCoordinates;
-    const closestTail = tails[0];
-    // Depending on direction
+  // Check to see if snake does not move onto tail
+  movedOntoTail(head, tails, notMovingBackwards) {
+    for (var i = 0; i < tails.length - 1; i++) {
+      const headIsOnTail = _.isEqual(head, tails[i]);
+      if (headIsOnTail && notMovingBackwards) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  // Check if next move is valid
+  isValidMove(direction) {
+    var state = this.props.snake;
+    var head = state.headCoordinates;
+    const tails = state.tailCoordinates;
+    const rocks = state.rockCoordinates;
+    const firstTailSegment = tails[0];
+
     if (direction === "up") {
       head = { x: head.x, y: head.y + 1 };
     } else if (direction === "down") {
@@ -75,23 +87,23 @@ class App extends Component {
       head = { x: head.x + 1, y: head.y };
     }
 
-    const isMovingBackwards = !_.isEqual(head, closestTail);
+    // Logic to see if snake head is trying to move to first tail segment
+    const notMovingBackwards = !_.isEqual(head, firstTailSegment);
+
     var gameOver = false;
-    // Does new head move onto tail?
-    for (var i = 0; i < tails.length - 1; i++) {
-      if (_.isEqual(head, tails[i]) && isMovingBackwards) {
-        gameOver = true;
-      }
-    }
+    gameOver = this.movedOntoTail(head, tails, notMovingBackwards);
 
     const hitRock = isItOverlappingRocks(head, rocks);
+
+    // If the snake goes out of bounds or hits a rock
     if (head.x < 0 || head.x > 19 || head.y < 0 || head.y > 15 || hitRock) {
       gameOver = true;
     }
 
     if (!gameOver) {
-      return isMovingBackwards;
+      return notMovingBackwards;
     } else {
+      // The user made a move
       this.props.resetGame();
       this.props.randomStartLocation();
     }
@@ -103,7 +115,7 @@ class App extends Component {
     const keyCode = event.keyCode;
     const direction = keyCodes[keyCode];
 
-    if (this.validMove(direction)) {
+    if (this.isValidMove(direction)) {
       if (direction === "up") {
         this.props.moveUp();
       } else if (direction === "down") {
